@@ -43,7 +43,7 @@
         .eyebrow { margin-bottom: 1rem; color: var(--rose-dark); font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
 
         .cat-gif {
-            position: absolute; right: 4vw; bottom: 2vh; z-index: 1;
+            position: absolute; right: 4vw; bottom: 2vh; z-index: 12;
             width: min(300px, 30vw); height: 220px; pointer-events: none;
             filter: drop-shadow(0 16px 18px rgba(99, 64, 91, .18));
             animation: floatScene 5s ease-in-out infinite;
@@ -66,6 +66,10 @@
         .spark-one { top: 12px; left: 44%; }
         .spark-two { top: 54px; right: 0; animation-delay: 1s; }
         @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: none; } }
+        @keyframes screenIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+        @keyframes screenOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-10px) scale(1.02); } }
+        @keyframes noButtonDodge { 0% { transform: translate(0, 0) rotate(0); } 35% { transform: translate(-10px, -8px) rotate(-8deg); } 70% { transform: translate(10px, 4px) rotate(7deg); } 100% { transform: translate(0, 0) rotate(0); } }
+        @keyframes noButtonBye { 0% { opacity: .8; transform: scale(1) rotate(0); } 45% { opacity: 1; transform: scale(1.15) rotate(-12deg); } 100% { opacity: 0; transform: scale(0) rotate(360deg); } }
         @keyframes floatScene { 50% { transform: translateY(-12px) rotate(1deg); } }
         @keyframes catBreath { 50% { transform: translateY(-4px) scale(1.015); } }
         @keyframes blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.12); } }
@@ -110,6 +114,10 @@
         .fade-transition {
             transition: opacity 0.4s ease-in-out;
         }
+        .screen.screen-enter { animation: screenIn .55s cubic-bezier(.2,.8,.2,1) both; }
+        .screen.screen-exit { animation: screenOut .4s ease both; }
+        .no-button-dodge { animation: noButtonDodge .45s cubic-bezier(.2,.8,.2,1); }
+        .no-button-bye { animation: noButtonBye .55s cubic-bezier(.2,.8,.2,1) forwards; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center overflow-hidden relative p-4">
@@ -233,10 +241,16 @@
             const currentScreen = document.getElementById(`screen-${fromId}`);
             const targetScreen = document.getElementById(`screen-${toId}`);
 
+            currentScreen.classList.remove('screen-enter');
+            currentScreen.classList.add('screen-exit');
             currentScreen.style.opacity = '0';
             setTimeout(() => {
                 currentScreen.classList.add('hidden');
+                currentScreen.classList.remove('screen-exit');
                 targetScreen.classList.remove('hidden');
+                targetScreen.classList.remove('screen-enter');
+                void targetScreen.offsetWidth;
+                targetScreen.classList.add('screen-enter');
                 setTimeout(() => {
                     targetScreen.style.opacity = '1';
                 }, 50);
@@ -256,16 +270,18 @@
             const randomMsg = noMessages[Math.floor(Math.random() * noMessages.length)];
             document.getElementById('no-message').textContent = randomMsg;
             
+            btnNo.classList.remove('no-button-dodge');
+            void btnNo.offsetWidth;
+            btnNo.classList.add('no-button-dodge');
             btnNo.style.transform = `translate(${(Math.random() - 0.5) * 120}px, ${(Math.random() - 0.5) * 60}px)`;
-            btnNo.style.opacity = '0.4';
+            btnNo.style.opacity = '0.72';
         }
 
         function handleNoClick() {
             const btnNo = document.getElementById('btn-no');
             document.getElementById('no-message').textContent = "Так не можна! 😼 Ця кнопка заборонена!";
             btnNo.style.transition = "all 0.4s ease";
-            btnNo.style.transform = "scale(0) rotate(180deg)";
-            btnNo.style.opacity = "0";
+            btnNo.classList.add('no-button-bye');
             setTimeout(() => {
                 btnNo.remove();
             }, 400);
@@ -276,10 +292,13 @@
             const currentScreen = document.getElementById('screen-3');
             const loadingScreen = document.getElementById('screen-loading');
 
+            currentScreen.classList.add('screen-exit');
             currentScreen.style.opacity = '0';
             setTimeout(() => {
                 currentScreen.classList.add('hidden');
+                currentScreen.classList.remove('screen-exit');
                 loadingScreen.classList.remove('hidden');
+                loadingScreen.classList.add('screen-enter');
                 setTimeout(() => {
                     loadingScreen.style.opacity = '1';
                 }, 50);
@@ -289,8 +308,10 @@
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.classList.add('hidden');
+                        loadingScreen.classList.remove('screen-enter');
                         const foodScreen = document.getElementById('screen-4');
                         foodScreen.classList.remove('hidden');
+                        foodScreen.classList.add('screen-enter');
                         setTimeout(() => {
                             foodScreen.style.opacity = '1';
                         }, 50);
@@ -306,10 +327,13 @@
             const foodScreen = document.getElementById('screen-4');
             const successScreen = document.getElementById('screen-success');
 
+            foodScreen.classList.add('screen-exit');
             foodScreen.style.opacity = '0';
             setTimeout(() => {
                 foodScreen.classList.add('hidden');
+                foodScreen.classList.remove('screen-exit');
                 successScreen.classList.remove('hidden');
+                successScreen.classList.add('screen-enter');
                 setTimeout(() => {
                     successScreen.style.opacity = '1';
                 }, 50);
