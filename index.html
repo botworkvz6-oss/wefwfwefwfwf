@@ -97,6 +97,7 @@
         }
         .screen.screen-enter { animation: screenIn .55s cubic-bezier(.2,.8,.2,1) both; }
         .screen.screen-exit { animation: screenOut .4s ease both; }
+        .cat-gif.gif-hidden { opacity: 0; visibility: hidden; animation-play-state: paused; transition: opacity .45s ease, visibility .45s ease; }
         .no-button-dodge { animation: noButtonDodge .45s cubic-bezier(.2,.8,.2,1); }
         .no-button-bye { animation: noButtonBye .55s cubic-bezier(.2,.8,.2,1) forwards; }
     </style>
@@ -217,7 +218,11 @@
         function switchScreen(fromId, toId) {
             const currentScreen = document.getElementById(`screen-${fromId}`);
             const targetScreen = document.getElementById(`screen-${toId}`);
+            const catGif = document.querySelector('.cat-gif');
 
+            if (fromId === 1) {
+                catGif.classList.add('gif-hidden');
+            }
             currentScreen.classList.remove('screen-enter');
             currentScreen.classList.add('screen-exit');
             currentScreen.style.opacity = '0';
