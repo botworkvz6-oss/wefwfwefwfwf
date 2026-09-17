@@ -62,7 +62,7 @@
         .cat-gif-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 28px; opacity: .96; mix-blend-mode: normal; transform: none; background: rgba(255, 255, 255, .35); }
         button:focus-visible { outline: 3px solid #75445f; outline-offset: 4px; }
         .love-notes { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .55s ease, visibility .55s ease; }
-        .love-notes.notes-visible { opacity: 1; visibility: visible; }
+        .love-notes.notes-visible { opacity: 1; visibility: visible; z-index: 20; }
         .love-note { position: absolute; color: rgba(185, 70, 111, .72); font-size: clamp(.75rem, 1.5vw, 1rem); font-weight: 800; white-space: nowrap; text-shadow: 0 2px 8px rgba(255,255,255,.7); animation: noteFloat 7s ease-in-out infinite; }
         .note-one { top: 18%; left: 6%; animation-delay: -.8s; }
         .note-two { top: 34%; right: 7%; animation-delay: -3.2s; }
@@ -83,6 +83,12 @@
             .food-choice { min-height: 106px; padding: .75rem; }
             .food-choice span:first-child { font-size: 1.8rem; }
             .eyebrow { font-size: .6rem; letter-spacing: .12em; }
+            .love-note { font-size: .68rem; }
+            .note-one { top: 8%; left: 2%; }
+            .note-two { top: 23%; right: 2%; }
+            .note-three { bottom: 10%; left: 2%; }
+            .note-four { bottom: 22%; right: 2%; }
+            .note-five { top: 48%; left: 8%; }
         }
         @media (max-width: 380px) {
             .invite-card { min-height: 500px; padding: 1.35rem .8rem; }
@@ -109,6 +115,14 @@
         .cat-gif.gif-hidden { opacity: 0; visibility: hidden; animation-play-state: paused; transition: opacity .45s ease, visibility .45s ease; }
         .no-button-dodge { animation: noButtonDodge .45s cubic-bezier(.2,.8,.2,1); }
         .no-button-bye { animation: noButtonBye .55s cubic-bezier(.2,.8,.2,1) forwards; }
+        .love-heart-loader { position: relative; width: 92px; height: 92px; margin-bottom: 1.25rem; }
+        .love-heart-loader::before { content: '💖'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 3.8rem; animation: loaderBeat 1s ease-in-out infinite; }
+        .loader-spark { position: absolute; color: #ef718e; font-size: 1.1rem; animation: loaderSpark 1.6s ease-in-out infinite; }
+        .loader-spark-one { top: 0; left: 3px; }
+        .loader-spark-two { right: 0; bottom: 3px; animation-delay: .5s; }
+        .mutual-message { min-height: 2rem; margin: .75rem 0 1.1rem; color: #d94e72; font-weight: 800; }
+        @keyframes loaderBeat { 0%, 100% { transform: scale(.9) rotate(-5deg); } 50% { transform: scale(1.12) rotate(5deg); } }
+        @keyframes loaderSpark { 0%, 100% { opacity: 0; transform: translateY(8px) scale(.6); } 50% { opacity: 1; transform: translateY(-8px) scale(1.1); } }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center overflow-hidden relative p-4">
@@ -155,9 +169,25 @@
             <div class="text-5xl mb-4">💌</div>
             <h2 class="text-2xl font-bold text-slate-700 mb-2">Час прийшов відкрити запрошення!</h2>
             <p class="text-slate-500 mb-8 text-sm">Тебе чекає дещо неймовірно приємне та романтичне...</p>
-            <button type="button" aria-label="Відкрити запрошення" onclick="switchScreen(2, 3)" class="soft-button w-full text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:opacity-95 transition transform hover:scale-105 pulse-glow cursor-pointer">
+            <button type="button" aria-label="Відкрити запрошення" onclick="switchScreen(2, 'love')" class="soft-button w-full text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:opacity-95 transition transform hover:scale-105 pulse-glow cursor-pointer">
                 Відкрити конверт ✨
             </button>
+        </div>
+
+        <!-- ЕКРАН: Взаємність -->
+        <div id="screen-love" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <div class="text-5xl mb-4">💞</div>
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">Ти мене любиш?</h2>
+            <p class="text-slate-500 mb-2 text-sm">Можеш відповісти чесно... але краще «так» 🥰</p>
+            <p id="mutual-message" class="mutual-message" aria-live="polite"></p>
+            <div class="flex items-center justify-center gap-4 w-full mt-2">
+                <button type="button" aria-label="Сказати, що люблю" onclick="handleLoveYes()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition transform hover:scale-105 cursor-pointer">
+                    Люблю 💖
+                </button>
+                <button id="btn-love-no" type="button" aria-label="Сказати, що не люблю" onmouseover="moveLoveNoButton()" onfocus="moveLoveNoButton()" onclick="handleLoveNo()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-full shadow-sm transition cursor-pointer relative">
+                    Не люблю 😼
+                </button>
+            </div>
         </div>
 
         <!-- ЕКРАН 3: Головне питання -->
@@ -178,8 +208,9 @@
 
         <!-- ЕКРАН завантаження -->
         <div id="screen-loading" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
-            <div class="w-12 h-12 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin mb-4"></div>
+            <div class="love-heart-loader" aria-hidden="true"><span class="loader-spark loader-spark-one">✦</span><span class="loader-spark loader-spark-two">♡</span></div>
             <h2 class="text-xl font-bold text-slate-700">Зачекай... ти сказала «Так»! 🥰</h2>
+            <p class="text-sm mt-2">Пакую для тебе обійми...</p>
         </div>
 
         <!-- ЕКРАН 4: Вибір місця -->
@@ -254,6 +285,39 @@
                     targetScreen.style.opacity = '1';
                 }, 50);
             }, 400);
+        }
+
+        const loveNoMessages = [
+            "Ноу-ноу! Так не можна 😼",
+            "Ой, кнопка образилась і втекла! 🏃‍♀️",
+            "Спробуй ще раз, Поліно 💕",
+            "Ця відповідь загубилася десь по дорозі... 🐾"
+        ];
+
+        function handleLoveYes() {
+            const loveScreen = document.getElementById('screen-love');
+            const message = document.getElementById('mutual-message');
+            message.textContent = 'Я теж тебе люблю! Дуже-дуже 💖';
+            loveScreen.classList.add('screen-enter');
+            setTimeout(() => switchScreen('love', 3), 1400);
+        }
+
+        function moveLoveNoButton() {
+            const btnNo = document.getElementById('btn-love-no');
+            const message = document.getElementById('mutual-message');
+            message.textContent = loveNoMessages[Math.floor(Math.random() * loveNoMessages.length)];
+            btnNo.classList.remove('no-button-dodge');
+            void btnNo.offsetWidth;
+            btnNo.classList.add('no-button-dodge');
+            btnNo.style.transform = `translate(${(Math.random() - 0.5) * 110}px, ${(Math.random() - 0.5) * 55}px)`;
+            btnNo.style.opacity = '0.72';
+        }
+
+        function handleLoveNo() {
+            const btnNo = document.getElementById('btn-love-no');
+            document.getElementById('mutual-message').textContent = 'Ноу-ноу! Кнопка кудись пропала 😳';
+            btnNo.classList.add('no-button-bye');
+            setTimeout(() => btnNo.remove(), 550);
         }
 
         // Логіка для кнопки "Ні"
