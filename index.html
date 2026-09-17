@@ -14,7 +14,7 @@
     <style>
         :root {
             --ink: #493843;
-            --muted: #866f7c;
+            --muted: #6f5966;
             --rose: #ef718e;
             --rose-dark: #d94e72;
         }
@@ -74,6 +74,8 @@
         .screen p { color: var(--muted); }
         .soft-button { border: 0; background: linear-gradient(135deg, #f3839c, #df5f87); box-shadow: 0 12px 22px rgba(223, 95, 135, .24); }
         .food-choice { background: rgba(255, 240, 246, .72) !important; border-color: rgba(239, 113, 142, .25) !important; }
+        .cat-gif-image { position: absolute; left: 50%; bottom: 18px; width: 150px; height: 120px; object-fit: cover; border-radius: 40% 40% 45% 45%; opacity: .28; mix-blend-mode: multiply; transform: translateX(-50%) rotate(-4deg); }
+        button:focus-visible { outline: 3px solid #75445f; outline-offset: 4px; }
         @media (max-width: 700px) {
             body { padding: .75rem; align-items: center; }
             .invite-card { width: 100%; min-height: min(560px, 84svh); padding: 1.75rem 1rem; border-radius: 1.75rem; }
@@ -121,6 +123,7 @@
     </div>
 
     <div class="cat-gif" aria-hidden="true">
+        <img class="cat-gif-image" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="" aria-hidden="true">
         <span class="heart-spark spark-one">✦</span>
         <span class="heart-spark spark-two">♡</span>
         <div class="cat cat-one"><div class="cat-face"><span class="cat-nose"></span></div></div>
@@ -140,7 +143,7 @@
             </div>
             <h2 class="text-2xl font-bold text-slate-700 mb-4">Скоро ти побачиш щось особливе...</h2>
             <div class="text-rose-500 font-semibold text-lg bg-pink-50 px-4 py-2 rounded-full inline-block border border-pink-100">
-                Зачекай: <span id="timer" class="font-bold">8</span>с
+                Зачекай: <span id="timer" class="font-bold" aria-live="polite" aria-atomic="true">8</span>с
             </div>
         </div>
 
@@ -149,7 +152,7 @@
             <div class="text-5xl mb-4">💌</div>
             <h2 class="text-2xl font-bold text-slate-700 mb-2">Час прийшов відкрити запрошення!</h2>
             <p class="text-slate-500 mb-8 text-sm">Тебе чекає дещо неймовірно приємне та романтичне...</p>
-            <button onclick="switchScreen(2, 3)" class="soft-button w-full text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:opacity-95 transition transform hover:scale-105 pulse-glow cursor-pointer">
+            <button type="button" aria-label="Відкрити запрошення" onclick="switchScreen(2, 3)" class="soft-button w-full text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:opacity-95 transition transform hover:scale-105 pulse-glow cursor-pointer">
                 Відкрити конверт ✨
             </button>
         </div>
@@ -161,10 +164,10 @@
             <p id="no-message" class="text-rose-500 text-sm font-semibold h-6 mb-4 transition-all duration-300"></p>
             
             <div class="flex items-center justify-center gap-4 w-full mt-2">
-                <button onclick="handleYesClick()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition transform hover:scale-105 cursor-pointer">
+                <button type="button" aria-label="Погодитися на побачення" onclick="handleYesClick()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition transform hover:scale-105 cursor-pointer">
                     Так! 💖
                 </button>
-                <button id="btn-no" onmouseover="moveNoButton()" onclick="handleNoClick()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-full shadow-sm transition cursor-pointer relative">
+                <button id="btn-no" type="button" aria-label="Відмовитися від побачення" onmouseover="moveNoButton()" onfocus="moveNoButton()" onclick="handleNoClick()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-full shadow-sm transition cursor-pointer relative">
                     Ні 😼
                 </button>
             </div>
@@ -182,19 +185,19 @@
             <p class="text-slate-500 mb-6 text-sm">Обери те, чого зараз найбільше хочеться 😋</p>
             
             <div class="grid grid-cols-2 gap-3 w-full">
-                <button onclick="selectFood('Піца 🍕')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                <button type="button" aria-label="Обрати піцу" onclick="selectFood('Піца 🍕')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
                     <span class="text-3xl mb-1">🍕</span>
                     <span class="font-bold text-slate-700 text-sm">Піца</span>
                 </button>
-                <button onclick="selectFood('Суші 🍣')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                <button type="button" aria-label="Обрати суші" onclick="selectFood('Суші 🍣')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
                     <span class="text-3xl mb-1">🍣</span>
                     <span class="font-bold text-slate-700 text-sm">Суші</span>
                 </button>
-                <button onclick="selectFood('Бургер 🍔')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                <button type="button" aria-label="Обрати бургер" onclick="selectFood('Бургер 🍔')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
                     <span class="text-3xl mb-1">🍔</span>
                     <span class="font-bold text-slate-700 text-sm">Бургер</span>
                 </button>
-                <button onclick="selectFood('Рамен 🍜')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                <button type="button" aria-label="Обрати рамен" onclick="selectFood('Рамен 🍜')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
                     <span class="text-3xl mb-1">🍜</span>
                     <span class="font-bold text-slate-700 text-sm">Рамен</span>
                 </button>
