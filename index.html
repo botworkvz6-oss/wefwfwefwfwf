@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Особливе запрошення 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti для фінальної анімації -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --ink: #493843;
+            --muted: #866f7c;
+            --rose: #ef718e;
+            --rose-dark: #d94e72;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 15%, rgba(255, 255, 255, .9) 0 3px, transparent 4px),
+                radial-gradient(circle at 78% 22%, rgba(255, 255, 255, .7) 0 2px, transparent 3px),
+                linear-gradient(145deg, #ffdbe3 0%, #f8dff0 45%, #dfe8ff 100%);
+            background-size: 170px 170px, 230px 230px, auto;
+        }
+
+        .invite-card {
+            min-height: 470px;
+            padding: 2.5rem;
+            background: rgba(255, 250, 247, .76);
+            border: 1px solid rgba(255, 255, 255, .85);
+            box-shadow: 0 28px 70px rgba(113, 71, 100, .2), inset 0 1px rgba(255,255,255,.8);
+            animation: cardIn .9s cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        .eyebrow { margin-bottom: 1rem; color: var(--rose-dark); font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+
+        .cat-gif {
+            position: absolute; right: 4vw; bottom: 2vh; z-index: 1;
+            width: min(300px, 30vw); height: 220px; pointer-events: none;
+            filter: drop-shadow(0 16px 18px rgba(99, 64, 91, .18));
+            animation: floatScene 5s ease-in-out infinite;
+        }
+        .cat-gif::before { content: ''; position: absolute; left: 7%; right: 7%; bottom: 8px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.42); filter: blur(8px); }
+        .cat { position: absolute; bottom: 34px; width: 112px; height: 116px; border-radius: 48% 48% 43% 43%; background: #fff4e8; border: 3px solid #c98d8a; animation: catBreath 3s ease-in-out infinite; }
+        .cat::before, .cat::after { content: ''; position: absolute; top: -25px; width: 42px; height: 44px; background: inherit; border: 3px solid #c98d8a; z-index: -1; }
+        .cat::before { left: 4px; transform: rotate(-28deg) skewY(12deg); }
+        .cat::after { right: 4px; transform: rotate(28deg) skewY(-12deg); }
+        .cat-one { left: 12%; background: #fff1dc; }
+        .cat-two { right: 8%; bottom: 35px; background: #d9b9e8; border-color: #9f76b5; animation-delay: .4s; }
+        .cat-two::before, .cat-two::after { border-color: #9f76b5; }
+        .cat-face { position: absolute; inset: 36px 16px auto; height: 45px; }
+        .cat-face::before, .cat-face::after { content: ''; position: absolute; top: 2px; width: 10px; height: 14px; border-radius: 50%; background: #493843; box-shadow: 0 0 0 3px rgba(255,255,255,.7); animation: blink 4s infinite; }
+        .cat-face::before { left: 10px; }
+        .cat-face::after { right: 10px; }
+        .cat-nose { position: absolute; left: 50%; top: 20px; width: 9px; height: 7px; transform: translateX(-50%); border-radius: 50%; background: #e8879b; }
+        .cat-nose::after { content: ''; position: absolute; left: 50%; top: 5px; width: 22px; height: 12px; border-bottom: 2px solid #493843; border-radius: 50%; transform: translateX(-50%); }
+        .heart-spark { position: absolute; color: #fff; font-size: 1.2rem; animation: spark 2.8s ease-in-out infinite; }
+        .spark-one { top: 12px; left: 44%; }
+        .spark-two { top: 54px; right: 0; animation-delay: 1s; }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: none; } }
+        @keyframes floatScene { 50% { transform: translateY(-12px) rotate(1deg); } }
+        @keyframes catBreath { 50% { transform: translateY(-4px) scale(1.015); } }
+        @keyframes blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.12); } }
+        @keyframes spark { 0%, 100% { opacity: .35; transform: translateY(5px) scale(.8); } 50% { opacity: 1; transform: translateY(-8px) scale(1.1); } }
+        .screen h2 { color: var(--ink); letter-spacing: -.025em; }
+        .screen p { color: var(--muted); }
+        .soft-button { border: 0; background: linear-gradient(135deg, #f3839c, #df5f87); box-shadow: 0 12px 22px rgba(223, 95, 135, .24); }
+        .food-choice { background: rgba(255, 240, 246, .72) !important; border-color: rgba(239, 113, 142, .25) !important; }
+        @media (max-width: 700px) {
+            body { padding: .75rem; align-items: center; }
+            .invite-card { width: 100%; min-height: min(560px, 84svh); padding: 1.75rem 1rem; border-radius: 1.75rem; }
+            .cat-gif { right: -22px; bottom: -5px; width: 190px; transform: scale(.72); transform-origin: bottom right; opacity: .55; }
+            .screen { position: relative; z-index: 2; }
+            .screen h2 { max-width: 100%; font-size: clamp(1.3rem, 6vw, 1.5rem); line-height: 1.2; }
+            .screen p { max-width: 31ch; line-height: 1.5; }
+            .screen button { min-height: 48px; }
+            .screen-3 > div:last-child { flex-direction: column; gap: .65rem; }
+            .screen-3 > div:last-child button { width: 100%; flex: none; }
+            .food-choice { min-height: 106px; padding: .75rem; }
+            .food-choice span:first-child { font-size: 1.8rem; }
+            .eyebrow { font-size: .6rem; letter-spacing: .12em; }
+        }
+        @media (max-width: 380px) {
+            .invite-card { min-height: 500px; padding: 1.35rem .8rem; }
+            #screen-1 .mb-6 { margin-bottom: .9rem; }
+            #screen-1 svg { width: 6rem; height: 6rem; }
+            .cat-gif { opacity: .35; transform: scale(.58); }
+            .food-choice { min-height: 94px; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 129, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 129, 0); }
+        }
+        .fade-transition {
+            transition: opacity 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center overflow-hidden relative p-4">
+
+    <!-- Декоративні плаваючі елементи на фоні -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        <div class="absolute top-10 left-10 text-rose-300 text-3xl animate-bounce">💖</div>
+        <div class="absolute bottom-10 right-10 text-pink-300 text-4xl animate-pulse">✨</div>
+        <div class="absolute top-1/3 right-20 text-rose-200 text-2xl animate-spin">🌸</div>
+        <div class="absolute bottom-1/4 left-1/4 text-pink-200 text-3xl animate-bounce">💌</div>
+    </div>
+
+    <div class="cat-gif" aria-hidden="true">
+        <span class="heart-spark spark-one">✦</span>
+        <span class="heart-spark spark-two">♡</span>
+        <div class="cat cat-one"><div class="cat-face"><span class="cat-nose"></span></div></div>
+        <div class="cat cat-two"><div class="cat-face"><span class="cat-nose"></span></div></div>
+    </div>
+
+    <!-- Головний контейнер картки -->
+    <div class="invite-card backdrop-blur-md rounded-3xl max-w-md w-full text-center relative z-10 flex flex-col items-center justify-center">
+
+        <!-- ЕКРАН 1: Стартовий -->
+        <div id="screen-1" class="screen fade-transition flex flex-col items-center justify-center w-full">
+            <div class="eyebrow">маленьке диво для тебе</div>
+            <div class="mb-6 relative">
+                <svg class="w-32 h-32 text-rose-400 drop-shadow-md animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-700 mb-4">Скоро ти побачиш щось особливе...</h2>
+            <div class="text-rose-500 font-semibold text-lg bg-pink-50 px-4 py-2 rounded-full inline-block border border-pink-100">
+                Зачекай: <span id="timer" class="font-bold">8</span>с
+            </div>
+        </div>
+
+        <!-- ЕКРАН 2: Запрошення -->
+        <div id="screen-2" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <div class="text-5xl mb-4">💌</div>
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">Час прийшов відкрити запрошення!</h2>
+            <p class="text-slate-500 mb-8 text-sm">Тебе чекає дещо неймовірно приємне та романтичне...</p>
+            <button onclick="switchScreen(2, 3)" class="soft-button w-full text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:opacity-95 transition transform hover:scale-105 pulse-glow cursor-pointer">
+                Відкрити конверт ✨
+            </button>
+        </div>
+
+        <!-- ЕКРАН 3: Головне питання -->
+        <div id="screen-3" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <div class="text-5xl mb-4">🥰</div>
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">Чи підеш ти зі мною на побачення?</h2>
+            <p id="no-message" class="text-rose-500 text-sm font-semibold h-6 mb-4 transition-all duration-300"></p>
+            
+            <div class="flex items-center justify-center gap-4 w-full mt-2">
+                <button onclick="handleYesClick()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition transform hover:scale-105 cursor-pointer">
+                    Так! 💖
+                </button>
+                <button id="btn-no" onmouseover="moveNoButton()" onclick="handleNoClick()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-full shadow-sm transition cursor-pointer relative">
+                    Ні 😼
+                </button>
+            </div>
+        </div>
+
+        <!-- ЕКРАН завантаження -->
+        <div id="screen-loading" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <div class="w-12 h-12 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin mb-4"></div>
+            <h2 class="text-xl font-bold text-slate-700">Зачекай... ти сказала «Так»! 🥰</h2>
+        </div>
+
+        <!-- ЕКРАН 4: Вибір місця -->
+        <div id="screen-4" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">Куди йдемо?</h2>
+            <p class="text-slate-500 mb-6 text-sm">Обери те, чого зараз найбільше хочеться 😋</p>
+            
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <button onclick="selectFood('Піца 🍕')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                    <span class="text-3xl mb-1">🍕</span>
+                    <span class="font-bold text-slate-700 text-sm">Піца</span>
+                </button>
+                <button onclick="selectFood('Суші 🍣')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                    <span class="text-3xl mb-1">🍣</span>
+                    <span class="font-bold text-slate-700 text-sm">Суші</span>
+                </button>
+                <button onclick="selectFood('Бургер 🍔')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                    <span class="text-3xl mb-1">🍔</span>
+                    <span class="font-bold text-slate-700 text-sm">Бургер</span>
+                </button>
+                <button onclick="selectFood('Рамен 🍜')" class="food-choice flex flex-col items-center justify-center p-4 hover:bg-pink-100 border rounded-2xl transition transform hover:scale-105 cursor-pointer shadow-sm">
+                    <span class="text-3xl mb-1">🍜</span>
+                    <span class="font-bold text-slate-700 text-sm">Рамен</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ФІНАЛЬНИЙ ЕКРАН -->
+        <div id="screen-success" class="screen fade-transition hidden opacity-0 flex flex-col items-center justify-center w-full">
+            <div class="text-6xl mb-4 animate-bounce">🎉</div>
+            <h2 class="text-2xl font-extrabold text-slate-700 mb-2">Ура! Ваше запрошення прийнято!</h2>
+            <p id="selected-choice-text" class="text-rose-500 font-semibold text-lg bg-pink-50 px-4 py-2 rounded-xl border border-pink-100 mt-2 mb-4"></p>
+            <p class="text-slate-400 text-xs">Чекаю на наше незабутнє побачення ❤️</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Зворотний відлік для Екрана 1
+        let timeLeft = 8;
+        const timerElement = document.getElementById('timer');
+        
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                switchScreen(1, 2);
+            }
+        }, 1000);
+
+        // Універсальна надійна функція перемикання екранів
+        function switchScreen(fromId, toId) {
+            const currentScreen = document.getElementById(`screen-${fromId}`);
+            const targetScreen = document.getElementById(`screen-${toId}`);
+
+            currentScreen.style.opacity = '0';
+            setTimeout(() => {
+                currentScreen.classList.add('hidden');
+                targetScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    targetScreen.style.opacity = '1';
+                }, 50);
+            }, 400);
+        }
+
+        // Логіка для кнопки "Ні"
+        const noMessages = [
+            "Так не можна! 😼",
+            "Ой, кнопочка зникла! 😉",
+            "Спробуй іншу кнопку! 💕",
+            "Навіть не думай! 🐾"
+        ];
+        
+        function moveNoButton() {
+            const btnNo = document.getElementById('btn-no');
+            const randomMsg = noMessages[Math.floor(Math.random() * noMessages.length)];
+            document.getElementById('no-message').textContent = randomMsg;
+            
+            btnNo.style.transform = `translate(${(Math.random() - 0.5) * 120}px, ${(Math.random() - 0.5) * 60}px)`;
+            btnNo.style.opacity = '0.4';
+        }
+
+        function handleNoClick() {
+            const btnNo = document.getElementById('btn-no');
+            document.getElementById('no-message').textContent = "Так не можна! 😼 Ця кнопка заборонена!";
+            btnNo.style.transition = "all 0.4s ease";
+            btnNo.style.transform = "scale(0) rotate(180deg)";
+            btnNo.style.opacity = "0";
+            setTimeout(() => {
+                btnNo.remove();
+            }, 400);
+        }
+
+        // Обробка натискання "Так"
+        function handleYesClick() {
+            const currentScreen = document.getElementById('screen-3');
+            const loadingScreen = document.getElementById('screen-loading');
+
+            currentScreen.style.opacity = '0';
+            setTimeout(() => {
+                currentScreen.classList.add('hidden');
+                loadingScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '1';
+                }, 50);
+
+                // Затримка 2.5 секунди і перехід до вибору їжі (Екран 4)
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        const foodScreen = document.getElementById('screen-4');
+                        foodScreen.classList.remove('hidden');
+                        setTimeout(() => {
+                            foodScreen.style.opacity = '1';
+                        }, 50);
+                    }, 400);
+                }, 2500);
+            }, 400);
+        }
+
+        // Вибір страви та фінальний екран з конфетті
+        function selectFood(foodName) {
+            document.getElementById('selected-choice-text').textContent = `Обрано: ${foodName} ❤️`;
+            
+            const foodScreen = document.getElementById('screen-4');
+            const successScreen = document.getElementById('screen-success');
+
+            foodScreen.style.opacity = '0';
+            setTimeout(() => {
+                foodScreen.classList.add('hidden');
+                successScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    successScreen.style.opacity = '1';
+                }, 50);
+            }, 400);
+
+            // Запуск святкового конфетті
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff6b81', '#ff85a2', '#ffb3c6', '#ffffff']
+            });
+        }
+    </script>
+</body>
+</html>
